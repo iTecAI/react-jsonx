@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { DataContext, FormContext } from "..";
+import { DataContext, FormContext } from "../types/contexts";
 import { entries, isEqual, get } from "lodash";
 import { ValueRoot } from "../types/valueItems";
 import { parseValue } from "./parseValue";

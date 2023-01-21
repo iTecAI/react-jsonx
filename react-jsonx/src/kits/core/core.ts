@@ -1,6 +1,10 @@
-import { GeneratorKitItem, RendererKitItem } from "../../types/kits";
+import {
+    GeneratorKitItem,
+    RendererKitItem,
+    RendererKitItemNoForm
+} from "../../types/kits";
 
-interface GroupItem extends RendererKitItem {
+interface GroupItem extends RendererKitItemNoForm {
     subtype: "group";
     children: (RendererKitItem | GeneratorKitItem)[] | GeneratorKitItem;
 }
@@ -8,3 +12,5 @@ interface GroupItem extends RendererKitItem {
 export interface CoreKit {
     group: GroupItem;
 }
+
+export type CoreKitRenderers = CoreKit[keyof CoreKit];

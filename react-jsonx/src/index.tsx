@@ -3,21 +3,10 @@ import { CoreKit } from "./kits/core/core";
 import { CoreKitRenderer } from "./renderers/blueprintjs/core";
 import { useState, useEffect } from "react";
 import { isEqual, set } from "lodash";
-import { createContext } from "react";
+import { RendererContext, DataContext, FormContext } from "./types/contexts";
 import { useContext } from "react";
 import { RendererKitItem } from "./types/kits";
 import { useFormField, useValueResolution } from "./util/hooks";
-
-export const DataContext = createContext<[any, (data: any) => void] | null>(
-    null
-);
-
-export const FormContext =
-    createContext<(path: string, value: any) => void | null>(null);
-
-export const RendererContext = createContext<{
-    [key: string]: (props: any) => JSX.Element;
-}>({});
 
 function DefaultError(props: { text: string }): JSX.Element {
     return <div className="jsonx error">Error: {props.text}</div>;
@@ -32,7 +21,7 @@ function RenderItem<T extends { [key: string]: RendererKitItem }>(props: {
     if (Object.keys(renderers).includes(props.spec.subtype)) {
         const ToRender: (props: { text: string }) => JSX.Element =
             renderers[props.spec.subtype];
-        if (props.spec.field) {
+        if ((props.spec as any).field) {
             return (
                 <ToRender
                     value={formValue}

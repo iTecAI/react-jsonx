@@ -11,11 +11,17 @@ export type Kit = {
     [key: string]: KitItem;
 };
 
-export interface RendererKitItem extends KitItem {
+export interface RendererKitItemForm extends KitItem {
     type: "renderer";
-    field?: boolean;
-    fieldSet?: ValueRoot;
+    field: boolean;
+    fieldSet: ValueRoot;
 }
+
+export interface RendererKitItemNoForm extends KitItem {
+    type: "renderer";
+}
+
+export type RendererKitItem = RendererKitItemNoForm | RendererKitItemForm;
 
 export interface GeneratorKitItem extends KitItem {
     type: "generator";
