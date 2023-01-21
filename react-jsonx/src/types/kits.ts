@@ -1,3 +1,5 @@
+import { ValueRoot } from "./valueItems";
+
 export type KitItemType = "renderer" | "generator" | "value";
 
 export interface KitItem {
@@ -11,14 +13,12 @@ export type Kit = {
 
 export interface RendererKitItem extends KitItem {
     type: "renderer";
+    field?: boolean;
+    fieldSet?: ValueRoot;
 }
 
 export interface GeneratorKitItem extends KitItem {
     type: "generator";
-}
-
-export interface ValueKitItem extends KitItem {
-    type: "value";
 }
 
 export function isRenderer(o: any): o is RendererKitItem {
@@ -27,8 +27,4 @@ export function isRenderer(o: any): o is RendererKitItem {
 
 export function isGenerator(o: any): o is GeneratorKitItem {
     return o.type === "generator";
-}
-
-export function isValue(o: any): o is ValueKitItem {
-    return o.type === "value";
 }
