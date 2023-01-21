@@ -2,17 +2,18 @@ import * as React from "react";
 import { CoreKit } from "./kits/core/core";
 import { CoreKitRenderer } from "./renderers/blueprintjs/core";
 import { useState, useEffect } from "react";
-import { isEqual, set } from "lodash";
+import { isArray, isEqual, set } from "lodash";
 import { RendererContext, DataContext, FormContext } from "./types/contexts";
 import { useContext } from "react";
-import { RendererKitItem } from "./types/kits";
+import { isGenerator, isRenderer } from "./types/kits";
 import { useFormField, useValueResolution } from "./util/hooks";
+import { ChildType } from "./types";
 
 function DefaultError(props: { text: string }): JSX.Element {
     return <div className="jsonx error">Error: {props.text}</div>;
 }
 
-function RenderItem<T extends { [key: string]: RendererKitItem }>(props: {
+function RenderItem<T extends { [key: string]: any }>(props: {
     spec: T[keyof T];
 }): JSX.Element {
     const renderers = useContext(RendererContext);
@@ -26,11 +27,25 @@ function RenderItem<T extends { [key: string]: RendererKitItem }>(props: {
                 <ToRender
                     value={formValue}
                     onChange={setFormValue}
+                    children={
+                        Object.keys(props.spec).includes("children") ? (
+                            <RenderGeneral spec={props.spec.children} />
+                        ) : undefined
+                    }
                     {...generatedProps}
                 />
             );
         } else {
-            return <ToRender {...generatedProps} />;
+            return (
+                <ToRender
+                    {...generatedProps}
+                    children={
+                        Object.keys(props.spec).includes("children") ? (
+                            <RenderGeneral spec={props.spec.children} />
+                        ) : undefined
+                    }
+                />
+            );
         }
     } else if (Object.keys(renderers).includes("error")) {
         const ToRender: (props: { text: string }) => JSX.Element =
@@ -38,6 +53,47 @@ function RenderItem<T extends { [key: string]: RendererKitItem }>(props: {
         return <ToRender text={`Unknown subtype ${props.spec.subtype}`} />;
     } else {
         return <DefaultError text={`Unknown subtype ${props.spec.subtype}`} />;
+    }
+}
+
+function RenderGeneral<T extends { [key: string]: any }>(props: {
+    spec: ChildType;
+}): JSX.Element {
+    const processedGeneratorData = useValueResolution(
+        isGenerator(props.spec) ? props.spec : {},
+        ["renderer"]
+    );
+
+    if (isRenderer(props.spec)) {
+        return <RenderItem<T> spec={props.spec as any} />;
+    } else if (isArray(props.spec)) {
+        return (
+            <>
+                {props.spec.map((v, i) => (
+                    <RenderItem spec={v} key={i} />
+                ))}
+            </>
+        );
+    } else {
+        let results: any[];
+        const renderer = props.spec.renderer;
+        switch (props.spec.subtype) {
+            case "iterator":
+                results = processedGeneratorData.iterator;
+                break;
+            default:
+                results = [];
+        }
+
+        return (
+            <>
+                {results.map((v) => (
+                    <DataContext.Provider value={v}>
+                        <RenderGeneral<any> spec={renderer} />
+                    </DataContext.Provider>
+                ))}
+            </>
+        );
     }
 }
 
@@ -82,7 +138,7 @@ export function ReactJSONX<Kit extends {} = CoreKit, Data = any>(
                 }}
             >
                 <RendererContext.Provider value={renderers}>
-                    <RenderItem<Kit> spec={spec} />
+                    <RenderGeneral<Kit> spec={spec as any} />
                 </RendererContext.Provider>
             </FormContext.Provider>
         </DataContext.Provider>

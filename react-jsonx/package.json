@@ -6,7 +6,7 @@
     "license": "MIT",
     "repository": "iTecAI/react-jsonx",
     "main": "dist/index.js",
-    "module": "dist/index.modern.js",
+    "module": "dist/index.modern.mjs",
     "source": "src/index.tsx",
     "engines": {
         "node": ">=10"

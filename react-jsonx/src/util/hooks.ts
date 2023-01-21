@@ -1,30 +1,42 @@
 import { useContext, useEffect, useState } from "react";
 import { DataContext, FormContext } from "../types/contexts";
-import { entries, isEqual, get } from "lodash";
-import { ValueRoot } from "../types/valueItems";
+import { entries, isEqual, get, isArray, isObject } from "lodash";
+import { ValueRoot, isValueKitItem } from "../types/valueItems";
 import { parseValue } from "./parseValue";
 
-const EXCLUDE: string[] = ["type", "subtype"];
+const EXCLUDE: string[] = ["type", "subtype", "children", "child"];
 
-function resolve(spec: any, data: any): [any, string[]] {
+function resolve(spec: any, data: any, exclude?: string[]): [any, string[]] {
     const resolved = { ...spec };
     const dependencies: string[] = [];
     for (const [k, v] of entries<ValueRoot>(spec)) {
-        if (!EXCLUDE.includes(k)) {
+        if (EXCLUDE.includes(k) || (exclude ?? []).includes(k)) {
+            continue;
+        }
+        if (isArray(v)) {
+            resolved[k] = v.map((i) => resolve(i, data, exclude));
+            continue;
+        }
+        if (isValueKitItem(v)) {
             resolved[k] = parseValue(v, data, dependencies);
+            continue;
+        }
+        if (isObject(v)) {
+            resolved[k] = resolve(v, data, exclude);
+            continue;
         }
     }
     return [resolved, dependencies];
 }
 
-export function useValueResolution(spec: any): any {
+export function useValueResolution(spec: any, exclude?: string[]): any {
     const [data] = useContext(DataContext);
     const [res, deps] = resolve(spec, data);
     const [resolved, setResolved] = useState<any>(res);
     const [dependencies, setDependencies] = useState<string[]>(deps);
 
     useEffect(() => {
-        const [newResolved, newDependencies] = resolve(spec, data);
+        const [newResolved, newDependencies] = resolve(spec, data, exclude);
         for (const item of newDependencies) {
             if (!isEqual(get(newResolved, item), get(resolved, item))) {
                 setResolved(newResolved);
@@ -51,7 +63,10 @@ export function useFormField<T>(
         return [
             value,
             (newValue) => {
-                updateForm(path, newValue);
+                (updateForm ?? ((path: string, value: any) => {}))(
+                    path,
+                    newValue
+                );
                 setValue(newValue);
             }
         ];

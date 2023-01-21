@@ -15,10 +15,12 @@ export interface RendererKitItemForm extends KitItem {
     type: "renderer";
     field: boolean;
     fieldSet: ValueRoot;
+    [key: string]: any;
 }
 
 export interface RendererKitItemNoForm extends KitItem {
     type: "renderer";
+    [key: string]: any;
 }
 
 export type RendererKitItem = RendererKitItemNoForm | RendererKitItemForm;
