@@ -1,5 +1,5 @@
-const tsj = require("ts-json-schema-generator");
-const fs = require("fs");
+import { createGenerator } from "ts-json-schema-generator";
+import { writeFile } from "fs";
 
 const tsconfig = "./tsconfig.json";
 
@@ -12,11 +12,13 @@ const configs = [
 ];
 
 for (const c of configs) {
-    const schema = tsj
-        .createGenerator({ path: c.path, tsconfig, type: c.type })
-        .createSchema(c.type);
+    const schema = createGenerator({
+        path: c.path,
+        tsconfig,
+        type: c.type
+    }).createSchema(c.type);
     const schemaString = JSON.stringify(schema, null, 4);
-    fs.writeFile(c.output, schemaString, { encoding: "utf8" }, (err) => {
+    writeFile(c.output, schemaString, { encoding: "utf8" }, (err) => {
         if (err) throw err;
     });
 }

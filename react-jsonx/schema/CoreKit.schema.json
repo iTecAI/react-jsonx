@@ -13,39 +13,88 @@
                     "type": "string",
                     "const": "group"
                 },
-                "field": {
-                    "type": "boolean"
-                },
-                "fieldSet": {
-                    "$ref": "#/definitions/ValueRoot"
-                },
                 "children": {
-                    "anyOf": [
-                        {
-                            "type": "array",
-                            "items": {
-                                "anyOf": [
-                                    {
-                                        "$ref": "#/definitions/RendererKitItem"
-                                    },
-                                    {
-                                        "$ref": "#/definitions/GeneratorKitItem"
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "$ref": "#/definitions/GeneratorKitItem"
-                        }
-                    ]
+                    "$ref": "#/definitions/ChildType"
                 }
             },
             "required": [
                 "children",
                 "subtype",
                 "type"
-            ],
-            "additionalProperties": false
+            ]
+        },
+        "ChildType": {
+            "anyOf": [
+                {
+                    "type": "array",
+                    "items": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/definitions/RendererKitItem"
+                            },
+                            {
+                                "$ref": "#/definitions/GeneratorItems"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "$ref": "#/definitions/RendererKitItem"
+                },
+                {
+                    "$ref": "#/definitions/GeneratorItems"
+                }
+            ]
+        },
+        "RendererKitItem": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/RendererKitItemNoForm"
+                },
+                {
+                    "$ref": "#/definitions/RendererKitItemForm"
+                }
+            ]
+        },
+        "RendererKitItemNoForm": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "const": "renderer"
+                },
+                "subtype": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "subtype",
+                "type"
+            ]
+        },
+        "RendererKitItemForm": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "const": "renderer"
+                },
+                "subtype": {
+                    "type": "string"
+                },
+                "field": {
+                    "type": "boolean"
+                },
+                "fieldSet": {
+                    "$ref": "#/definitions/ValueRoot"
+                }
+            },
+            "required": [
+                "field",
+                "fieldSet",
+                "subtype",
+                "type"
+            ]
         },
         "ValueRoot": {
             "anyOf": [
@@ -152,30 +201,10 @@
             ],
             "additionalProperties": false
         },
-        "RendererKitItem": {
-            "type": "object",
-            "properties": {
-                "type": {
-                    "type": "string",
-                    "const": "renderer"
-                },
-                "subtype": {
-                    "type": "string"
-                },
-                "field": {
-                    "type": "boolean"
-                },
-                "fieldSet": {
-                    "$ref": "#/definitions/ValueRoot"
-                }
-            },
-            "required": [
-                "subtype",
-                "type"
-            ],
-            "additionalProperties": false
+        "GeneratorItems": {
+            "$ref": "#/definitions/IteratorGenerator"
         },
-        "GeneratorKitItem": {
+        "IteratorGenerator": {
             "type": "object",
             "properties": {
                 "type": {
@@ -183,10 +212,19 @@
                     "const": "generator"
                 },
                 "subtype": {
-                    "type": "string"
+                    "type": "string",
+                    "const": "iterator"
+                },
+                "iterator": {
+                    "$ref": "#/definitions/ValueRoot"
+                },
+                "renderer": {
+                    "$ref": "#/definitions/ChildType"
                 }
             },
             "required": [
+                "iterator",
+                "renderer",
                 "subtype",
                 "type"
             ],
