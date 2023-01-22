@@ -1,40 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { DataContext, FormContext } from "../types/contexts";
-import { entries, isEqual, get, isArray, isObject } from "lodash";
-import { ValueRoot, isValueKitItem } from "../types/valueItems";
-import { parseValue } from "./parseValue";
-
-const EXCLUDE: string[] = ["type", "subtype", "children", "child"];
-
-export function resolve(
-    spec: any,
-    data: any,
-    exclude?: string[] | null
-): [any, string[]] {
-    const resolved = { ...spec };
-    const dependencies: string[] = [];
-    for (const [k, v] of entries<ValueRoot>(spec)) {
-        if (
-            (EXCLUDE.includes(k) || (exclude ?? []).includes(k)) &&
-            exclude !== null
-        ) {
-            continue;
-        }
-        if (isArray(v)) {
-            resolved[k] = v.map((i) => resolve(i, data, exclude));
-            continue;
-        }
-        if (isValueKitItem(v)) {
-            resolved[k] = parseValue(v, data, dependencies);
-            continue;
-        }
-        if (isObject(v)) {
-            resolved[k] = resolve(v, data, exclude);
-            continue;
-        }
-    }
-    return [resolved, dependencies];
-}
+import { isEqual, get } from "lodash";
+import { resolve } from "./parsers";
 
 export function useValueResolution(spec: any, exclude?: string[]): any {
     const [data] = useContext(DataContext) ?? [{}];

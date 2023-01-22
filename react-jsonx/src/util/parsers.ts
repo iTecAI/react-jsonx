@@ -1,12 +1,43 @@
-import { isArray, isString } from "lodash";
+import { entries, get, isArray, isObject, isString } from "lodash";
 import {
-    ValueKitItemDirective,
+    FunctionType,
     ValueKitType,
     ValueRoot,
     isValueKitItem
-} from "../types/valueItems";
-import lodash from "lodash";
-import { parseFunction } from "./parseFunction";
+} from "../types";
+import { ValueKitItemDirective } from "../types/valueItems";
+
+const EXCLUDE: string[] = ["type", "subtype", "children", "child"];
+
+export function resolve(
+    spec: any,
+    data: any,
+    exclude?: string[] | null
+): [any, string[]] {
+    const resolved = { ...spec };
+    const dependencies: string[] = [];
+    for (const [k, v] of entries<ValueRoot>(spec)) {
+        if (
+            (EXCLUDE.includes(k) || (exclude ?? []).includes(k)) &&
+            exclude !== null
+        ) {
+            continue;
+        }
+        if (isArray(v)) {
+            resolved[k] = v.map((i) => resolve(i, data, exclude));
+            continue;
+        }
+        if (isValueKitItem(v)) {
+            resolved[k] = parseValue(v, data, dependencies);
+            continue;
+        }
+        if (isObject(v)) {
+            resolved[k] = resolve(v, data, exclude);
+            continue;
+        }
+    }
+    return [resolved, dependencies];
+}
 
 export function parseValue(
     item: ValueRoot,
@@ -41,7 +72,7 @@ export function parseValue(
                     const path = parseValue(args.path, data, dependenciesSet);
                     if (path) {
                         dependenciesSet.push(args.path);
-                        return lodash.get(data, path, args.default ?? path);
+                        return get(data, path, args.default ?? path);
                     } else {
                         return data;
                     }
@@ -54,9 +85,7 @@ export function parseValue(
                     data,
                     dependenciesSet
                 );
-                for (const entry of lodash.entries<ValueRoot>(
-                    args.substitutions
-                )) {
+                for (const entry of entries<ValueRoot>(args.substitutions)) {
                     toSub = toSub.replace(
                         new RegExp(`\{\{${entry[0]}\}\}`, "g"),
                         parseValue(entry[1], data, dependenciesSet)
@@ -70,4 +99,12 @@ export function parseValue(
     } else {
         return item;
     }
+}
+
+export function parseFunction(func: FunctionType): (data: any) => any {
+    const executor = Function("opts", `return (${func.code})(opts)`);
+    return (data: any) => {
+        const [resolvedArgs] = resolve(func.opts, data, null);
+        return executor(resolvedArgs);
+    };
 }
