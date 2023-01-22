@@ -45,6 +45,34 @@
                         "subtype",
                         "type"
                     ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "const": "renderer"
+                        },
+                        "subtype": {
+                            "type": "string",
+                            "const": "rawInput"
+                        },
+                        "field": {
+                            "type": "boolean"
+                        },
+                        "fieldSet": {
+                            "$ref": "#/definitions/ValueRoot"
+                        },
+                        "placeholder": {
+                            "$ref": "#/definitions/ValueRoot"
+                        }
+                    },
+                    "required": [
+                        "field",
+                        "fieldSet",
+                        "subtype",
+                        "type"
+                    ]
                 }
             ]
         },

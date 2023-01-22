@@ -25,7 +25,7 @@ function RenderItem<T extends { [key: string]: any }>(props: {
         if ((props.spec as any).field) {
             return (
                 <ToRender
-                    value={formValue}
+                    value={formValue ?? ""}
                     onChange={setFormValue}
                     children={
                         Object.keys(props.spec).includes("children") ? (

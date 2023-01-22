@@ -37,11 +37,8 @@ export function useValueResolution(spec: any, exclude?: string[]): any {
 
     useEffect(() => {
         const [newResolved, newDependencies] = resolve(spec, data, exclude);
-        for (const item of newDependencies) {
-            if (!isEqual(get(newResolved, item), get(resolved, item))) {
-                setResolved(newResolved);
-                break;
-            }
+        if (!isEqual(resolved, newResolved)) {
+            setResolved(newResolved);
         }
         if (!isEqual(dependencies, newDependencies)) {
             setDependencies(newDependencies);

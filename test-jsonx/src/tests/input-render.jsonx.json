@@ -1,0 +1,18 @@
+{
+    "type": "renderer",
+    "subtype": "group",
+    "children": [
+        {
+            "type": "renderer",
+            "subtype": "rawInput",
+            "field": true,
+            "fieldSet": "input",
+            "placeholder": "Test"
+        },
+        {
+            "type": "renderer",
+            "subtype": "rawText",
+            "text": "$data:input"
+        }
+    ]
+}
