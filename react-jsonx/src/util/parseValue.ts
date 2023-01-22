@@ -6,6 +6,7 @@ import {
     isValueKitItem
 } from "../types/valueItems";
 import lodash from "lodash";
+import { parseFunction } from "./parseFunction";
 
 export function parseValue(
     item: ValueRoot,
@@ -62,6 +63,9 @@ export function parseValue(
                     );
                 }
                 return toSub;
+            case "function":
+                const parsed = parseFunction(args.function);
+                return parsed(data);
         }
     } else {
         return item;

@@ -6,11 +6,18 @@ import { parseValue } from "./parseValue";
 
 const EXCLUDE: string[] = ["type", "subtype", "children", "child"];
 
-function resolve(spec: any, data: any, exclude?: string[]): [any, string[]] {
+export function resolve(
+    spec: any,
+    data: any,
+    exclude?: string[] | null
+): [any, string[]] {
     const resolved = { ...spec };
     const dependencies: string[] = [];
     for (const [k, v] of entries<ValueRoot>(spec)) {
-        if (EXCLUDE.includes(k) || (exclude ?? []).includes(k)) {
+        if (
+            (EXCLUDE.includes(k) || (exclude ?? []).includes(k)) &&
+            exclude !== null
+        ) {
             continue;
         }
         if (isArray(v)) {

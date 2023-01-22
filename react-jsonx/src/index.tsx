@@ -64,37 +64,48 @@ function RenderGeneral<T extends { [key: string]: any }>(props: {
         ["renderer"]
     );
 
-    if (isRenderer(props.spec)) {
-        return <RenderItem<T> spec={props.spec as any} />;
-    } else if (isArray(props.spec)) {
-        return (
-            <>
-                {props.spec.map((v, i) => (
-                    <RenderItem spec={v} key={i} />
-                ))}
-            </>
-        );
-    } else {
-        let results: any[];
-        const renderer = props.spec.renderer;
-        switch (props.spec.subtype) {
-            case "iterator":
-                results = processedGeneratorData.iterator;
-                break;
-            default:
-                results = [];
-        }
+    const [render, setRender] = useState<JSX.Element>(<></>);
 
-        return (
-            <>
-                {results.map((v) => (
-                    <DataContext.Provider value={v}>
-                        <RenderGeneral<any> spec={renderer} />
-                    </DataContext.Provider>
-                ))}
-            </>
-        );
-    }
+    useEffect(() => {
+        if (isRenderer(props.spec)) {
+            setRender(<RenderItem<T> spec={props.spec as any} />);
+        } else if (isArray(props.spec)) {
+            setRender(
+                <>
+                    {props.spec.map((v, i) => (
+                        <RenderGeneral spec={v} key={i} />
+                    ))}
+                </>
+            );
+        } else {
+            let results: any[];
+            const renderer = props.spec.renderer;
+            switch (props.spec.subtype) {
+                case "iterator":
+                    results = processedGeneratorData.iterator;
+                    break;
+                default:
+                    results = [];
+            }
+
+            setRender(
+                <>
+                    {results.map((v, i) => {
+                        return (
+                            <DataContext.Provider
+                                value={[v, (data) => {}]}
+                                key={i}
+                            >
+                                <RenderGeneral<any> spec={renderer} />
+                            </DataContext.Provider>
+                        );
+                    })}
+                </>
+            );
+        }
+    }, [processedGeneratorData, props.spec]);
+
+    return render;
 }
 
 export type ReactJSONXProps<T, D = any> = {

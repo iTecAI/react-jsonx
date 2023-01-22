@@ -6,21 +6,25 @@
             "type": "renderer",
             "subtype": "rawInput",
             "field": true,
-            "fieldSet": "input",
-            "placeholder": "Test"
+            "fieldSet": "input"
         },
         {
-            "type": "renderer",
-            "subtype": "rawText",
-            "text": {
+            "type": "generator",
+            "subtype": "iterator",
+            "iterator": {
                 "type": "value",
                 "subtype": "function",
                 "function": {
-                    "code": "(opts) => opts.input.split(',').join(' - ')",
+                    "code": "(opts) => opts.input.split(',')",
                     "opts": {
                         "input": "$data:input"
                     }
                 }
+            },
+            "renderer": {
+                "type": "renderer",
+                "subtype": "rawText",
+                "text": "$data"
             }
         }
     ]

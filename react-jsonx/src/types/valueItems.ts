@@ -1,8 +1,9 @@
 import { isArray, isString } from "lodash";
+import { FunctionType } from "./function";
 
 export type ValueKitItemDirective = "data";
 export const ValueKitItemDirectiveList = ["data"];
-export type ValueKitType = ValueKitItemDirective | "text";
+export type ValueKitType = ValueKitItemDirective | "text" | "function";
 export type Literal = string | number | boolean | Literal[] | null;
 export type ValueRoot = Literal | ValueKitItem;
 
@@ -20,9 +21,16 @@ export interface TextValueItem {
     substitutions: { [key: string]: ValueRoot };
 }
 
+export interface FunctionValueItem {
+    type: "value";
+    subtype: "function";
+    function: FunctionType;
+}
+
 export type ValueKitItem =
     | DataValueItem
     | TextValueItem
+    | FunctionValueItem
     | `${ValueKitItemDirective}:${string}`
     | ValueRoot[];
 
@@ -39,8 +47,7 @@ export function isValueKitItem(obj: any): obj is ValueKitItem {
         if (
             ValueKitItemDirectiveList.includes(
                 (obj.split("$")[1] ?? "").split(":")[0]
-            ) &&
-            obj.split(":").length > 1
+            )
         ) {
             return true;
         }
