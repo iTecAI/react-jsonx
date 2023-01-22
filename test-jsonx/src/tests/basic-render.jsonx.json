@@ -1,0 +1,11 @@
+{
+    "type": "renderer",
+    "subtype": "group",
+    "children": [
+        {
+            "type": "renderer",
+            "subtype": "rawText",
+            "text": "Woop"
+        }
+    ]
+}
