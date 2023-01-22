@@ -30,7 +30,7 @@ function resolve(spec: any, data: any, exclude?: string[]): [any, string[]] {
 }
 
 export function useValueResolution(spec: any, exclude?: string[]): any {
-    const [data] = useContext(DataContext);
+    const [data] = useContext(DataContext) ?? [{}];
     const [res, deps] = resolve(spec, data);
     const [resolved, setResolved] = useState<any>(res);
     const [dependencies, setDependencies] = useState<string[]>(deps);
@@ -55,10 +55,10 @@ export function useFormField<T>(
 ): [T | null, (value: T | null) => void] {
     const data = useContext(DataContext);
     const updateForm = useContext(FormContext);
-    const [value, setValue] = useState<T | null>(get(data, path) ?? null);
+    const [value, setValue] = useState<T | null>(get(data, path ?? "") ?? null);
 
     if (path === undefined) {
-        return [undefined, (value: T) => {}];
+        return [null, (value: T | null) => {}];
     } else {
         return [
             value,
