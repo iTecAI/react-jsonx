@@ -5,11 +5,17 @@ import { BlueprintKit } from "./kits/blueprintjs/types";
 import { BlueprintKitRenderer } from "./kits/blueprintjs/renderers";
 import { useState, useEffect } from "react";
 import { isArray, isEqual, set } from "lodash";
-import { RendererContext, DataContext, FormContext } from "./types/contexts";
+import {
+    RendererContext,
+    DataContext,
+    FormContext,
+    IconContext
+} from "./types/contexts";
 import { useContext } from "react";
 import { isGenerator, isRenderer } from "./types/kits";
 import { useFormField, useValueResolution } from "./util/hooks";
 import { ChildType } from "./types";
+import { Icon } from "./util/Icon";
 
 function DefaultError(props: { text: string }): JSX.Element {
     return <div className="jsonx error">Error: {props.text}</div>;
@@ -113,10 +119,16 @@ function RenderGeneral<T extends { [key: string]: any }>(props: {
 export type ReactJSONXProps<T, D = any> = {
     renderers?: { [item in keyof T]: (props: any) => JSX.Element } & {
         [key: string]: any;
-    }; // Mapping of renderer names to render functions, with overflow. Defaults to blueprint renderer
+    }; // Mapping of renderer names to render functions, with overflow. Defaults to core renderer
     spec: T[keyof T]; // Renderer specification
     data?: D; // Input data
     onChange?: (data: any) => void; // Function to call when data changes
+    iconMap?: {
+        [key: string]: (props: {
+            className?: string;
+            size?: number;
+        }) => JSX.Element;
+    }; // Mapping of icon name : icon component. Defaults to {}
 };
 
 export function ReactJSONX<Kit extends {} = CoreKit, Data = any>(
@@ -152,7 +164,9 @@ export function ReactJSONX<Kit extends {} = CoreKit, Data = any>(
                     }}
                 >
                     <RendererContext.Provider value={renderers}>
-                        <RenderGeneral<Kit> spec={spec as any} />
+                        <IconContext.Provider value={props.iconMap ?? {}}>
+                            <RenderGeneral<Kit> spec={spec as any} />
+                        </IconContext.Provider>
                     </RendererContext.Provider>
                 </FormContext.Provider>
             </DataContext.Provider>
@@ -160,4 +174,4 @@ export function ReactJSONX<Kit extends {} = CoreKit, Data = any>(
     );
 }
 
-export { CoreKit, CoreKitRenderer, BlueprintKit, BlueprintKitRenderer };
+export { CoreKit, CoreKitRenderer, BlueprintKit, BlueprintKitRenderer, Icon };

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ReactJSONX, BlueprintKit, BlueprintKitRenderer } from "react-jsonx";
 import * as blt1 from "./tests/blueprint.blue-jsonx.json";
+import * as MdIcons from "react-icons/md";
 
 function App() {
     const [data, setData] = useState<{ data: string }>({
@@ -16,6 +17,7 @@ function App() {
                     setData(_data);
                 }}
                 renderers={BlueprintKitRenderer}
+                iconMap={MdIcons}
             />
         </div>
     );
