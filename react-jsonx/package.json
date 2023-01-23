@@ -31,6 +31,6 @@
     "dependencies": {
         "lodash": "^4.17.21"
     },
-    "version": "1.0.0",
+    "version": "1.0.1",
     "repository": "https://github.com/iTecAI/react-jsonx"
 }
