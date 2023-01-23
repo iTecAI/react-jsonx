@@ -6,7 +6,7 @@ function App() {
     const [data, setData] = useState<{ data: string }>({
         data: "I Am Test Data",
     });
-    return <div className="App bp4-dark"></div>;
+    return <div className="App"></div>;
 }
 
 export default App;
