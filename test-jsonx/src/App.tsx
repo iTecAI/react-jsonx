@@ -7,7 +7,7 @@ function App() {
         data: "I Am Test Data",
     });
     return (
-        <div className="App">
+        <div className="App bp4-dark">
             <ReactJSONX<BlueprintKit>
                 spec={blt1}
                 data={data}
