@@ -13,7 +13,6 @@ export type Kit = {
 
 export interface RendererKitItemForm extends KitItem {
     type: "renderer";
-    field: boolean;
     fieldSet: ValueRoot;
     [key: string]: any;
 }

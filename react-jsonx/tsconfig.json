@@ -7,5 +7,6 @@
         "strict": true,
         "skipLibCheck": true,
         "jsx": "react"
-    }
+    },
+    "include": ["./src/types/generators.ts", "./src/types/function.ts"]
 }

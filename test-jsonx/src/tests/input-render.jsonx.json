@@ -5,7 +5,6 @@
         {
             "type": "renderer",
             "subtype": "rawInput",
-            "field": true,
             "fieldSet": "input",
             "placeholder": "Test"
         },

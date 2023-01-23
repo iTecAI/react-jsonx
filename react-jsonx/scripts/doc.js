@@ -1,22 +1,27 @@
-import { createGenerator } from "ts-json-schema-generator";
+import * as TJS from "typescript-json-schema";
 import { writeFile } from "fs";
+import { resolve } from "path";
 
 const tsconfig = "./tsconfig.json";
 
 const configs = [
     {
-        path: "./src/kits/core/core.ts",
+        path: "./src/kits/core/types.ts",
         output: "./schema/CoreKit.schema.json",
-        type: "CoreKitRenderers" // Or <type-name> if you want to generate schema for that one type only
+        type: "CoreKitRenderers"
+    },
+    {
+        path: "./src/kits/blueprintjs/types.ts",
+        output: "./schema/BlueprintKit.schema.json",
+        type: "BlueprintRenderers"
     }
 ];
 
+const program = TJS.getProgramFromFiles(configs.map((c) => resolve(c.path)));
+const generator = TJS.buildGenerator(program);
+
 for (const c of configs) {
-    const schema = createGenerator({
-        path: c.path,
-        tsconfig,
-        type: c.type
-    }).createSchema(c.type);
+    const schema = TJS.generateSchema(program, c.type, {}, [], generator);
     const schemaString = JSON.stringify(schema, null, 4);
     writeFile(c.output, schemaString, { encoding: "utf8" }, (err) => {
         if (err) throw err;

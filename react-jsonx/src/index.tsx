@@ -1,6 +1,8 @@
 import * as React from "react";
-import { CoreKit } from "./kits/core/core";
-import { CoreKitRenderer } from "./renderers/blueprintjs/core";
+import { CoreKit } from "./kits/core/types";
+import { CoreKitRenderer } from "./kits/core/renderers";
+import { BlueprintKit } from "./kits/blueprintjs/types";
+import { BlueprintKitRenderer } from "./kits/blueprintjs/renderers";
 import { useState, useEffect } from "react";
 import { isArray, isEqual, set } from "lodash";
 import { RendererContext, DataContext, FormContext } from "./types/contexts";
@@ -22,7 +24,7 @@ function RenderItem<T extends { [key: string]: any }>(props: {
     if (Object.keys(renderers).includes(props.spec.subtype)) {
         const ToRender: (props: { text: string }) => JSX.Element =
             renderers[props.spec.subtype];
-        if ((props.spec as any).field) {
+        if ((props.spec as any).fieldSet !== undefined) {
             return (
                 <ToRender
                     value={formValue ?? ""}
@@ -138,20 +140,24 @@ export function ReactJSONX<Kit extends {} = CoreKit, Data = any>(
     }, [data, props.onChange]);
 
     return (
-        <DataContext.Provider value={[data, setData]}>
-            <FormContext.Provider
-                value={(path, value) => {
-                    const newData = { ...data };
-                    set(newData, path, value);
-                    if (!isEqual(newData, data)) {
-                        setData(newData);
-                    }
-                }}
-            >
-                <RendererContext.Provider value={renderers}>
-                    <RenderGeneral<Kit> spec={spec as any} />
-                </RendererContext.Provider>
-            </FormContext.Provider>
-        </DataContext.Provider>
+        <div className="jsonx-wrapper">
+            <DataContext.Provider value={[data, setData]}>
+                <FormContext.Provider
+                    value={(path, value) => {
+                        const newData = { ...data };
+                        set(newData, path, value);
+                        if (!isEqual(newData, data)) {
+                            setData(newData);
+                        }
+                    }}
+                >
+                    <RendererContext.Provider value={renderers}>
+                        <RenderGeneral<Kit> spec={spec as any} />
+                    </RendererContext.Provider>
+                </FormContext.Provider>
+            </DataContext.Provider>
+        </div>
     );
 }
+
+export { CoreKit, CoreKitRenderer, BlueprintKit, BlueprintKitRenderer };

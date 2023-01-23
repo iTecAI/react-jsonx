@@ -1,4 +1,4 @@
-import { entries, get, isArray, isObject, isString } from "lodash";
+import { entries, get, isArray, isNumber, isObject, isString } from "lodash";
 import {
     FunctionType,
     ValueKitType,
@@ -14,6 +14,9 @@ export function resolve(
     data: any,
     exclude?: string[] | null
 ): [any, string[]] {
+    if (isNumber(spec) || isString(spec)) {
+        return [spec, []];
+    }
     const resolved = { ...spec };
     const dependencies: string[] = [];
     for (const [k, v] of entries<ValueRoot>(spec)) {
@@ -24,15 +27,21 @@ export function resolve(
             continue;
         }
         if (isArray(v)) {
-            resolved[k] = v.map((i) => resolve(i, data, exclude));
+            resolved[k] = v.map((i: any) => {
+                const [res, deps] = resolve(i, data, exclude);
+                dependencies.push(...deps);
+                return res;
+            });
             continue;
         }
         if (isValueKitItem(v)) {
             resolved[k] = parseValue(v, data, dependencies);
             continue;
         }
-        if (isObject(v)) {
-            resolved[k] = resolve(v, data, exclude);
+        if (isObject(v) && !isNumber(v) && !isString(v)) {
+            const [res, deps] = resolve(v, data, exclude);
+            resolved[k] = res;
+            dependencies.push(...deps);
             continue;
         }
     }
@@ -46,7 +55,7 @@ export function parseValue(
 ): any {
     if (isValueKitItem(item)) {
         if (isArray(item)) {
-            return item.map((v) => parseValue(v, data, dependenciesSet));
+            return item.map((v: any) => parseValue(v, data, dependenciesSet));
         }
 
         let directive: ValueKitType;
