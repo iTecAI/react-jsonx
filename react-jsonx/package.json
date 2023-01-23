@@ -31,5 +31,6 @@
     "dependencies": {
         "@blueprintjs/core": "^4.14.3",
         "lodash": "^4.17.21"
-    }
+    },
+    "version": "0.0.0"
 }

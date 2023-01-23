@@ -1,7 +1,0 @@
-{
-    "type": "renderer",
-    "subtype": "text",
-    "variant": "h1",
-    "style": ["monospace"],
-    "text": "$data:data"
-}

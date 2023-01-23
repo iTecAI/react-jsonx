@@ -1,8 +1,6 @@
 import * as React from "react";
 import { CoreKit } from "./kits/core/types";
 import { CoreKitRenderer } from "./kits/core/renderers";
-import { BlueprintKit } from "./kits/blueprintjs/types";
-import { BlueprintKitRenderer } from "./kits/blueprintjs/renderers";
 import { useState, useEffect } from "react";
 import { isArray, isEqual, set } from "lodash";
 import {
@@ -174,4 +172,4 @@ export function ReactJSONX<Kit extends {} = CoreKit, Data = any>(
     );
 }
 
-export { CoreKit, CoreKitRenderer, BlueprintKit, BlueprintKitRenderer, Icon };
+export { CoreKit, CoreKitRenderer, Icon };

@@ -2,18 +2,11 @@ import * as TJS from "typescript-json-schema";
 import { writeFile } from "fs";
 import { resolve } from "path";
 
-const tsconfig = "./tsconfig.json";
-
 const configs = [
     {
         path: "./src/kits/core/types.ts",
         output: "./schema/CoreKit.schema.json",
         type: "CoreKitRenderers"
-    },
-    {
-        path: "./src/kits/blueprintjs/types.ts",
-        output: "./schema/BlueprintKit.schema.json",
-        type: "BlueprintRenderers"
     }
 ];
 
